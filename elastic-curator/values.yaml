@@ -1,0 +1,35 @@
+image:
+  repo: bitnami/elasticsearch-curator
+  tag: 5.8.3
+
+elasticsearch:
+  host: elasticsearch
+  port: 9200
+
+# Elasticsearch indices & indices age which is older than this setting will be deleted(days)
+indicesName: logstach-
+indicesAge: 60
+
+# Mount path for the configmap
+mountPath: /etc/config
+# Schedule to run job. crontab format
+schedule: "0 5 * * *"
+
+# How many jobs to keep in history
+history:
+  successfulJobs: 0
+  failedJobs: 3
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 100m
+  limits:
+    memory: 512Mi
+    cpu: 200m
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

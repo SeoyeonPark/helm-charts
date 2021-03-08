@@ -1,0 +1,50 @@
+apiVersion: batch/v1beta1 #for API server versions < 1.8.0 use batch/v2alpha1 and enable it in the API server
+kind: CronJob
+metadata:
+  name: {{ template "elastic-curator.fullname" . }}
+  labels:
+    app: {{ template "elastic-curator.name" . }}
+    chart: {{ template "elastic-curator.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  schedule: {{ .Values.schedule | quote }}
+  successfulJobsHistoryLimit: {{ .Values.history.successfulJobs }}
+  failedJobsHistoryLimit: {{ .Values.history.failedJobs }}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 120
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: {{ template "elastic-curator.name" . }}
+            image: "{{ .Values.image.repo }}:{{ .Values.image.tag }}"
+            args:
+            - --config
+            - {{ .Values.mountPath }}/config.yml
+            - {{ .Values.mountPath }}/action_file.yml
+            volumeMounts:
+            - name: config
+              mountPath: {{ .Values.mountPath }}
+          {{- with .Values.resources }}
+            resources:
+{{ toYaml . | indent 14}}
+          {{- end }}
+          volumes:
+          - name: config
+            configMap:
+              name: {{ template "elastic-curator.fullname" . }}-config
+          restartPolicy: OnFailure
+      {{- with .Values.nodeSelector }}
+        nodeSelector:
+{{ toYaml . | indent 10 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+        affinity:
+{{ toYaml . | indent 10 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+        tolerations:
+{{ toYaml . | indent 10 }}
+      {{- end }}

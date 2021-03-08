@@ -1,0 +1,13 @@
+apiVersion: v1
+version: 0.1.0
+appVersion: 5.8.3
+name: elastic-curator
+description: A Helm chart for Elastic Curator
+home: https://github.com/elastic/curator
+keywords:
+  - elasticsearch-curator
+  - elasticsearch
+  - curator
+maintainers:
+  - name: SeoyeonPark
+    email: hiunpark3@gmail.com
